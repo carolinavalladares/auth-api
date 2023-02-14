@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 
 // import route middleware
 const authRouter = require("./routes/auth");
