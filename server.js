@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 8080;
 
 // import route middleware
 const authRouter = require("./routes/auth");
+const postRouter = require("./routes/posts");
 
 // middlewares
 app.use(express.json());
@@ -14,6 +15,7 @@ app.use(cors());
 
 // route middlewares
 app.use("/api/auth", authRouter);
+app.use("/api/posts", postRouter);
 
 // Connect to DB
 mongoose.set("strictQuery", true);
