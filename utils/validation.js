@@ -14,7 +14,7 @@ module.exports.validateRegister = function validateRegister(data) {
 
 module.exports.validateLogin = function validateLogin(data) {
   const schema = Joi.object({
-    password: Joi.string().min(8).required(),
+    password: Joi.string().required(),
     email: Joi.string().email().required(),
   });
   return schema.validate(data);

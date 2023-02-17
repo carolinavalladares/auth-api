@@ -34,6 +34,7 @@ const PostSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+
   favourites: {
     type: [UserId],
     default: [],
