@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const UserId = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: true,
-  },
-});
+// const UserId = new mongoose.Schema({
+//   userId: {
+//     type: String,
+//     required: true,
+//   },
+// });
 
 const postId = new mongoose.Schema({
   postId: {
@@ -42,11 +42,11 @@ const UserSchema = new mongoose.Schema({
     default: [],
   },
   followers: {
-    type: [UserId],
+    type: [String],
     default: [],
   },
   following: {
-    type: [UserId],
+    type: [String],
     default: [],
   },
   createdAt: {

@@ -72,7 +72,11 @@ router.get("/list/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const posts = await Post.find({ authorId: { $eq: id } });
+    const posts = await Post.find(
+      { authorId: { $eq: id } },
+      {},
+      { sort: { createdAt: -1 } }
+    );
 
     res.status(200).json({ status: 200, posts });
   } catch (error) {
