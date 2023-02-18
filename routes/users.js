@@ -105,4 +105,58 @@ router.delete("/unfollow/:id", verifyUser, async (req, res) => {
   }
 });
 
+router.get("/get-followers/:id", verifyUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const profileUser = await User.findById(id);
+
+    const followersArray = await User.find({
+      _id: { $in: profileUser.followers },
+    });
+
+    const followers = followersArray.map((follower) => {
+      return {
+        _id: follower._id,
+        username: follower.username,
+        displayName: follower.displayName,
+        favourites: follower.favourites,
+        followers: follower.followers,
+        following: follower.following,
+      };
+    });
+
+    res.status(200).json({ status: 200, followers });
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching", status: 400, error });
+  }
+});
+
+router.get("/get-following/:id", verifyUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const profileUser = await User.findById(id);
+
+    const followingArray = await User.find({
+      _id: { $in: profileUser.following },
+    });
+
+    const follows = followingArray.map((following) => {
+      return {
+        _id: following._id,
+        username: following.username,
+        displayName: following.displayName,
+        favourites: following.favourites,
+        followers: following.followers,
+        following: following.following,
+      };
+    });
+
+    res.status(200).json({ status: 200, following: follows });
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching", status: 400, error });
+  }
+});
+
 module.exports = router;
