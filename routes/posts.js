@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
+const User = require("../models/User");
 const TimelinePost = require("../models/Timeline");
 const { verifyUser } = require("../middlewares/verifyUser");
 const { validatePost } = require("../utils/validation");
@@ -65,6 +66,18 @@ router.get("/user-posts", verifyUser, async (req, res) => {
       res.status(200).json({ status: 200, posts });
     }
   );
+});
+
+router.get("/list/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const posts = await Post.find({ authorId: { $eq: id } });
+
+    res.status(200).json({ status: 200, posts });
+  } catch (error) {
+    res.status(400).json({ message: "Couldn't get posts", status: 400, error });
+  }
 });
 
 module.exports = router;

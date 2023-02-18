@@ -2,8 +2,8 @@ const Joi = require("@hapi/joi");
 
 module.exports.validateRegister = function validateRegister(data) {
   const schema = Joi.object({
-    displayName: Joi.string().min(3).required(),
-    username: Joi.string().alphanum().min(3).required(),
+    displayName: Joi.string().alphanum().min(3).required(),
+    username: Joi.string().min(3).required(),
     password: Joi.string().required(),
     email: Joi.string().email().required(),
     profileImage: Joi.string().allow(""),
