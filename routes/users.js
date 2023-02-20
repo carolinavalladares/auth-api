@@ -111,6 +111,7 @@ router.get("/get-followers/:id", verifyUser, async (req, res) => {
   try {
     const profileUser = await User.findById(id);
 
+    // Get all the user whose id is in profileUser.followers
     const followersArray = await User.find({
       _id: { $in: profileUser.followers },
     });
@@ -138,6 +139,7 @@ router.get("/get-following/:id", verifyUser, async (req, res) => {
   try {
     const profileUser = await User.findById(id);
 
+    // Get all the user whose id is in profileUser.following
     const followingArray = await User.find({
       _id: { $in: profileUser.following },
     });

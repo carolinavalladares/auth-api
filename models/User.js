@@ -1,19 +1,5 @@
 const mongoose = require("mongoose");
 
-// const UserId = new mongoose.Schema({
-//   userId: {
-//     type: String,
-//     required: true,
-//   },
-// });
-
-const postId = new mongoose.Schema({
-  postId: {
-    type: String,
-    required: true,
-  },
-});
-
 const UserSchema = new mongoose.Schema({
   displayName: {
     type: String,
@@ -38,7 +24,7 @@ const UserSchema = new mongoose.Schema({
   },
 
   favourites: {
-    type: [postId],
+    type: [String],
     default: [],
   },
   followers: {
