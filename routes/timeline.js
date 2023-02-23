@@ -8,11 +8,19 @@ router.get("/all", verifyUser, async (req, res) => {
   try {
     const docs = await Timeline.find({});
 
-    // const postIds = docs.map((doc) => {
-    //   return { postId: doc.postId };
-    // });
+    const timelinePosts = docs.map((post) => {
+      return {
+        authorId: post.authorId,
+        author: post.author,
+        favourites: post.favourites,
+        content: post.content,
+        updatedAt: post.updatedAt,
+        createdAt: post.createdAt,
+        id: post._id,
+      };
+    });
 
-    res.status(200).json({ posts: docs, status: 200 });
+    res.status(200).json({ posts: timelinePosts, status: 200 });
   } catch (error) {
     res.status(400).json({ message: "Couldn't get posts", status: 400, error });
   }
@@ -51,8 +59,20 @@ router.get("/user-timeline", verifyUser, async (req, res) => {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
 
+    const allPostsArr = allPosts.map((post) => {
+      return {
+        authorId: post.authorId,
+        author: post.author,
+        favourites: post.favourites,
+        content: post.content,
+        updatedAt: post.updatedAt,
+        createdAt: post.createdAt,
+        id: post._id,
+      };
+    });
+
     res.status(200).json({
-      posts: allPosts,
+      posts: allPostsArr,
       status: 200,
     });
   } catch (error) {

@@ -8,7 +8,21 @@ router.get("/all", verifyUser, async (req, res) => {
   try {
     const users = await User.find({ _id: { $ne: user._id } });
 
-    res.status(200).json({ users });
+    const usersArr = users.map((user) => {
+      return {
+        username: user.username,
+        displayName: user.displayName,
+        email: user.email,
+        id: user._id,
+        followers: user.followers,
+        following: user.following,
+        createdAt: user.createdAt,
+        profileImage: user.profileImage,
+        id: user._id,
+      };
+    });
+
+    res.status(200).json({ users: usersArr });
   } catch (error) {
     res.status(400).json({ message: "Couldn't get users", status: 400, error });
   }
@@ -35,7 +49,7 @@ router.get("/:id", verifyUser, async (req, res) => {
         username,
         displayName,
         email,
-        _id,
+        id: _id,
         followers,
         following,
         createdAt,
@@ -118,7 +132,7 @@ router.get("/get-followers/:id", verifyUser, async (req, res) => {
 
     const followers = followersArray.map((follower) => {
       return {
-        _id: follower._id,
+        id: follower._id,
         username: follower.username,
         displayName: follower.displayName,
         favourites: follower.favourites,
@@ -146,7 +160,7 @@ router.get("/get-following/:id", verifyUser, async (req, res) => {
 
     const follows = followingArray.map((following) => {
       return {
-        _id: following._id,
+        id: following._id,
         username: following.username,
         displayName: following.displayName,
         favourites: following.favourites,

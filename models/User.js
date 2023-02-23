@@ -23,10 +23,6 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
 
-  favourites: {
-    type: [String],
-    default: [],
-  },
   followers: {
     type: [String],
     default: [],

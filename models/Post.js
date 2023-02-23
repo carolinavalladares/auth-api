@@ -35,8 +35,13 @@ const PostSchema = mongoose.Schema({
     default: Date.now,
   },
 
+  updatedAt: {
+    type: Date,
+    default: "",
+  },
+
   favourites: {
-    type: [UserId],
+    type: [String],
     default: [],
   },
 });
