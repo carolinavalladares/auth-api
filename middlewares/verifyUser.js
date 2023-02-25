@@ -13,6 +13,9 @@ module.exports.verifyUser = async function verifyUser(req, res, next) {
 
     const user = await User.findById(jwtInfo.userId);
 
+    if (!user)
+      return res.status(400).json({ message: "User not found", status: 400 });
+
     req.user = user;
 
     next();

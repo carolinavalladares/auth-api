@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
-const User = require("../models/User");
+const Comment = require("../models/Comment");
 const TimelinePost = require("../models/Timeline");
 const { verifyUser } = require("../middlewares/verifyUser");
 const { validatePost } = require("../utils/validation");
@@ -72,6 +72,7 @@ router.get("/user-posts", verifyUser, async (req, res) => {
           updatedAt: post.updatedAt,
           createdAt: post.createdAt,
           id: post._id,
+          comments: post.comments,
         };
       });
 
@@ -99,12 +100,36 @@ router.get("/list/:id", async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       };
     });
 
     res.status(200).json({ status: 200, posts: postsArr });
   } catch (error) {
     res.status(400).json({ message: "Couldn't get posts", status: 400, error });
+  }
+});
+
+router.get("/get-one/:id", verifyUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await Post.findById(id);
+
+    const postObj = {
+      authorId: post.authorId,
+      author: post.author,
+      favourites: post.favourites,
+      content: post.content,
+      updatedAt: post.updatedAt,
+      createdAt: post.createdAt,
+      id: post._id,
+      comments: post.comments,
+    };
+
+    res.status(200).json({ status: 200, post: postObj });
+  } catch (error) {
+    res.status(404).json({ message: "Post not found", status: 404, error });
   }
 });
 
@@ -115,6 +140,8 @@ router.delete("/delete-one/:id", verifyUser, async (req, res) => {
     const deletedFromTimeline = await TimelinePost.deleteOne({ postId: id });
 
     const post = await Post.deleteOne({ _id: id });
+    const timelinePost = await TimelinePost.deleteOne({ postId: id });
+    const comments = await Comment.deleteMany({ postId: id });
 
     res.status(200).json({
       status: 200,
@@ -126,6 +153,7 @@ router.delete("/delete-one/:id", verifyUser, async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       },
     });
   } catch (error) {
@@ -172,6 +200,7 @@ router.patch("/update-one/:id", verifyUser, async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       },
       status: 200,
     });
@@ -212,6 +241,7 @@ router.patch("/like-post/:id", verifyUser, async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       },
     });
   } catch (error) {
@@ -247,6 +277,7 @@ router.patch("/dislike-post/:id", verifyUser, async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       },
       status: 200,
     });
@@ -254,6 +285,83 @@ router.patch("/dislike-post/:id", verifyUser, async (req, res) => {
     res
       .status(400)
       .json({ message: "Couldn't dislike post", status: 400, error });
+  }
+});
+
+router.post("/add-comment/:id", verifyUser, async (req, res) => {
+  const { user } = req;
+  const { content } = req.body;
+  const { id } = req.params;
+
+  if (!content || !id) {
+    return res
+      .status(400)
+      .json({ message: "required data missing", status: 400 });
+  }
+
+  try {
+    const newComment = new Comment({
+      content: content,
+      postId: id,
+      authorId: `${user._id}`,
+      author: {
+        username: user.username,
+        displayName: user.displayName,
+        profileImage: user.profileImage,
+      },
+    });
+
+    await newComment.save();
+
+    const savedComment = {
+      authorId: newComment.authorId,
+      author: newComment.author,
+      postId: newComment.postId,
+      id: newComment._id,
+      content: newComment.content,
+    };
+
+    const post = await Post.findById(id);
+
+    post.comments.push(`${newComment._id}`);
+
+    await post.save();
+
+    res.status(200).json({ newComment: savedComment, status: 200 });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Failed to created comment", status: 400, error });
+  }
+});
+
+router.get("/get-comments/:id", verifyUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await Post.findById(id);
+
+    const commentsArr = await Comment.find(
+      { _id: { $in: post.comments } },
+      {},
+      { sort: { createdAt: -1 } }
+    );
+
+    const comments = commentsArr.map((item) => {
+      return {
+        author: item.author,
+        authorId: item.authorId,
+        content: item.content,
+        id: item._id,
+        createdAt: item.createdAt,
+      };
+    });
+
+    res.status(200).json({ status: 200, comments });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error fetching comments", status: 400, error });
   }
 });
 

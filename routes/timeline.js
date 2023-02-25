@@ -17,6 +17,7 @@ router.get("/all", verifyUser, async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       };
     });
 
@@ -68,6 +69,7 @@ router.get("/user-timeline", verifyUser, async (req, res) => {
         updatedAt: post.updatedAt,
         createdAt: post.createdAt,
         id: post._id,
+        comments: post.comments,
       };
     });
 
